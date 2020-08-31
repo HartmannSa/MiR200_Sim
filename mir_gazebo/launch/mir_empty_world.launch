@@ -2,7 +2,7 @@
 <launch>
   <arg name="gui" default="true" />
   <!--arg name="world_name" default="worlds/empty.world"/--> <!-- Note: the world_name is with respect to GAZEBO_RESOURCE_PATH environmental variable, but can also be an absolute path -->
-  <arg name="world_name" default="$(find mir_gazebo)/maps/world/pp_test_5.world"/> <!-- pp_test_5.world, match_7.world -->
+  <arg name="world_name" default="$(find mir_gazebo)/maps/world/pp_test_5.world"/> <!-- pp_test_5.world, match_7.world, shopfloor.world -->
   
   <arg name="robot_x"   default="0.0" />
   <arg name="robot_y"   default="0.0" />

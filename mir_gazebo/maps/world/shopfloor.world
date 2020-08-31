@@ -81,7 +81,7 @@
       <elevation>0</elevation>
       <heading_deg>0</heading_deg>
     </spherical_coordinates>
-    <model name='pp_test_5'>
+    <model name='shopfloor'>
       <pose frame=''>0.006807 0 0 0 -0 0</pose>
       <link name='Wall_0'>
         <collision name='Wall_0_Collision'>
@@ -604,7 +604,7 @@
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
-      <model name='pp_test_5'>
+      <model name='shopfloor'>
         <pose frame=''>0.006807 0 0 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='Wall_0'>
