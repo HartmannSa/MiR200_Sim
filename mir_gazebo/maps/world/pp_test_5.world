@@ -167,7 +167,7 @@
         <kinematic>0</kinematic>
         <gravity>1</gravity>
       </link>
-      <link name='Wall_10'>
+      <!-- link name='Wall_10'>
         <collision name='Wall_10_Collision'>
           <geometry>
             <box>
@@ -250,8 +250,8 @@
         <self_collide>0</self_collide>
         <kinematic>0</kinematic>
         <gravity>1</gravity>
-      </link>
-      <link name='Wall_15'>
+      </link -->
+      <!--link name='Wall_15'>
         <collision name='Wall_15_Collision'>
           <geometry>
             <box>
@@ -334,7 +334,7 @@
         <self_collide>0</self_collide>
         <kinematic>0</kinematic>
         <gravity>1</gravity>
-      </link>
+      </link-->
       <link name='Wall_19'>
         <collision name='Wall_19_Collision'>
           <geometry>
