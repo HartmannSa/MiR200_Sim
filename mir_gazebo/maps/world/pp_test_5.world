@@ -81,6 +81,53 @@
       <elevation>0</elevation>
       <heading_deg>0</heading_deg>
     </spherical_coordinates>
+    <!-- Pallet (1.2x1.0x0.144) with Objects to detect -->
+    <model name='NonStatic_Components'>
+      <pose frame=''>0 0 0 0 -0 0</pose>
+      <link name='Pallet_1'>
+        <collision name='Pallet_1_Collision'>
+          <geometry>
+            <box>
+              <size>1.2 1.0 0.2</size>
+            </box>
+          </geometry>
+          <pose frame=''>0 0 0.1 0 -0 0</pose>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='Pallet_1_Visual'>
+          <pose frame=''>0 0 0.1 0 -0 0</pose>
+          <geometry>
+            <box>
+              <size>1.2 1.0 0.2</size>
+            </box>
+          </geometry>
+          <material>
+            <!--script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/DarkYellow</name>
+            </script-->
+            <ambient>0.914 0.725 0.431 1</ambient> 
+          </material>
+        </visual>
+        <pose frame=''>4.5 4.5 0 0 -0 0</pose>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>  
+      <static>1</static>
+    </model>
     <model name='pp_test_5'>
       <pose frame=''>0.006807 0 0 0 -0 0</pose>
       <link name='Wall_0'>
