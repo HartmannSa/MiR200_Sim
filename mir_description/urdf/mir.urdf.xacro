@@ -13,9 +13,9 @@
   <xacro:controller_plugin_gazebo robot_namespace=""/>
 
   <!-- Intel RealSense D435 PlugIn -->
-  <xacro:include filename="$(find mir_description)/urdf/_d435.urdf.xacro"> 
-    <sensor_d435 parent="${prefix}camera_link"></sensor_d435>
-  </xacro:include>
+  <!--xacro:include filename="$(find mir_description)/urdf/include/_d435.urdf.xacro"> 
+    <sensor_d435 parent="${prefix}camera_link_optical"></sensor_d435>
+  </xacro:include-->
 
 
 

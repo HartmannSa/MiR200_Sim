@@ -14,6 +14,7 @@
       </attenuation>
       <direction>-0.5 0.5 -1</direction>
     </light>
+
     <model name='ground_plane'>
       <static>1</static>
       <link name='link'>
@@ -61,6 +62,7 @@
         <gravity>1</gravity>
       </link>
     </model>
+
     <gravity>0 0 -9.8</gravity>
     <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
     <atmosphere type='adiabatic'/>
@@ -81,8 +83,9 @@
       <elevation>0</elevation>
       <heading_deg>0</heading_deg>
     </spherical_coordinates>
+
     <!-- Pallet (1.2x1.0x0.144) with Objects to detect -->
-    <model name='NonStatic_Components'>
+    <!--model name='NonStatic_Components'>
       <pose frame=''>0 0 0 0 -0 0</pose>
       <link name='Pallet_1'>
         <collision name='Pallet_1_Collision'>
@@ -113,12 +116,12 @@
               <size>1.2 1.0 0.2</size>
             </box>
           </geometry>
-          <material>
+          <material-->
             <!--script>
               <uri>file://media/materials/scripts/gazebo.material</uri>
               <name>Gazebo/DarkYellow</name>
             </script-->
-            <ambient>0.914 0.725 0.431 1</ambient> 
+            <!--ambient>0.914 0.725 0.431 1</ambient> 
           </material>
         </visual>
         <pose frame=''>4.5 4.5 0 0 -0 0</pose>
@@ -127,7 +130,8 @@
         <gravity>1</gravity>
       </link>  
       <static>1</static>
-    </model>
+    </model-->
+
     <model name='pp_test_5'>
       <pose frame=''>0.006807 0 0 0 -0 0</pose>
       <link name='Wall_0'>
@@ -636,6 +640,7 @@
       </link>
       <static>1</static>
     </model>
+
     <state world_name='default'>
       <sim_time>79 97000000</sim_time>
       <real_time>79 225328799</real_time>
@@ -731,6 +736,7 @@
         <pose frame=''>0 0 10 0 -0 0</pose>
       </light>
     </state>
+    
     <gui fullscreen='0'>
       <camera name='user_camera'>
         <pose frame=''>-3.30745 -18.4718 59.8288 0 1.2098 1.5882</pose>
