@@ -12,13 +12,6 @@
   <xacro:mir_200 prefix=""/>
   <xacro:controller_plugin_gazebo robot_namespace=""/>
 
-  <!-- Intel RealSense D435 PlugIn -->
-  <!--xacro:include filename="$(find mir_description)/urdf/include/_d435.urdf.xacro"> 
-    <sensor_d435 parent="${prefix}camera_link_optical"></sensor_d435>
-  </xacro:include-->
-
-
-
   <!-- instead of the controller_plugin_gazebo, you can use the diffdrive controller like this:
     <xacro:diff_controller_plugin_gazebo prefix=""
       left_wheel_joint="left_wheel_joint"

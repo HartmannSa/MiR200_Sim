@@ -9,6 +9,7 @@
   <xacro:include filename="$(find mir_description)/urdf/include/mir_200.gazebo.xacro" />
   <xacro:include filename="$(find mir_description)/urdf/include/mir_200.transmission.xacro" />
   <xacro:include filename="$(find mir_description)/urdf/include/sick_s300.urdf.xacro" />
+  <xacro:include filename="$(find mir_description)/urdf/include/_d435.urdf.xacro"/> 
 
   <xacro:property name="deg_to_rad" value="0.017453293" />
 
@@ -237,55 +238,16 @@
       <child link="${prefix}surface" />
       <axis xyz="0 0 1" />
     </joint>
-
     <link name="${prefix}surface"/>
 
     <xacro:mir_200_wheel_transmissions prefix="${prefix}"/>
 
-    <!-- disabled, because it doesn't make a difference in Gazebo: -->
-    <!-- <xacro:set_all_wheel_frictions prefix="${prefix}"/> -->
-
     <p3d_base_controller prefix="${prefix}" />
 
     <!-- Camera -->
-    <link name="camera_link">
-      <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <box size="0.1 0.1 0.1"/>
-        </geometry>
-      </collision>
-      <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <mesh filename="package://mir_description/meshes/visual/realsense.dae" />
-        </geometry>
-      </visual>
-      <inertial>
-        <mass value="1e-5" />
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
-      </inertial>
-    </link>
+    <xacro:sensor_d435 name="camera_base" parent="${prefix}base_link">
+      <origin xyz="0.42 0 0.27" rpy="0 0.2 0"/>
+    </xacro:sensor_d435>
 
-    <joint name="camera_joint" type="fixed">
-      <axis xyz="0 1 0" />
-      <origin xyz="0.42 0 0.27" rpy="0 0.2 0"/> <!--set the position of the realsense-->
-      <parent link="${prefix}base_link"/>
-      <child link="camera_link"/>
-    </joint>
-
-    <!-- generate an optical frame http://www.ros.org/reps/rep-0103.html#suffix-frames
-        so that ros and opencv can operate on the camera frame correctly -->
-    <joint name="camera_optical_joint" type="fixed">
-      <!-- these values have to be these values otherwise the gazebo camera image
-          won't be aligned properly with the frame it is supposedly originating from -->
-      <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
-      <parent link="camera_link"/>
-      <child link="camera_link_optical"/>
-    </joint>
-
-    <link name="camera_link_optical">
-    </link>
   </xacro:macro>
 </robot>
