@@ -40,3 +40,9 @@ mobile_base_controller:
       max_velocity           : 1.5  # rad/s; move_base max_rot_vel: 1.0
       has_acceleration_limits: true
       max_acceleration       : 2.5  # rad/s^2; move_base acc_lim_th: 2.0
+
+
+arm_controller:
+  type: "effort_controllers/JointPositionController"
+  joint: "arm_1_base_joint"
+  pid: {p: 70.0, i: 5.0, d: 7.0}
