@@ -244,8 +244,8 @@
 
     <p3d_base_controller prefix="${prefix}" />
 
-    <!--Fake Arm (z 0.450477) -->
 
+    <!--Fake Arm (z 0.450477) -->
     <joint name="${prefix}robot_to_arm_joint" type="fixed">
       <parent link="${prefix}base_link"/>
       <child link="${prefix}arm_base_link"/>      
@@ -284,13 +284,13 @@
     <link name="${prefix}arm_1_link">
       <visual>
         <geometry>
-          <cylinder length="0.3" radius="0.05"/>
+          <cylinder length="0.5" radius="0.05"/>
         </geometry>
         <material name="white"/>
       </visual>
       <collision>
          <geometry>
-           <cylinder length="0.3" radius="0.05"/>
+           <cylinder length="0.5" radius="0.05"/>
         </geometry>
       </collision>
       <inertial>
@@ -320,7 +320,7 @@
       <origin xyz="0.42 0 0.27" rpy="0 0.2 0"/>
     </xacro:sensor_d435>
     <xacro:sensor_d435 name="camera_arm" parent="${prefix}arm_1_link">
-      <origin xyz="0.025 0 0.16" rpy="0 0.2 0"/>
+      <origin xyz="0.025 0 0.26" rpy="0 0.2 0"/>
     </xacro:sensor_d435>
 
   </xacro:macro>
