@@ -13,14 +13,25 @@
   </include>
 
     <include file="$(find mir_gazebo)/launch/includes/spawn_sdf.launch">
-        <arg name="robot_name" value="coke_can2" />
-        <arg name="x" value="3.0" />
-        <arg name="y" value="0.0" />
-        <arg name="z" value="2.0" />
+        <arg name="robot_name" value="beer" />
+        <arg name="x" value="3.2" />
+        <arg name="y" value="0.2" />
+        <arg name="z" value="0.0" />
         <arg name="roll" value="0"/>
         <arg name="pitch" value="0"/>
         <arg name="yaw" value="0.0" />
-        <arg name="sdf_robot_file" value="$(find mir_gazebo)/models/coke_can/model.sdf" />
+        <arg name="sdf_robot_file" value="$(find mir_gazebo)/models/beer/model.sdf" />
+  </include>
+
+      <include file="$(find mir_gazebo)/launch/includes/spawn_sdf.launch">
+        <arg name="robot_name" value="pallet" />
+        <arg name="x" value="4.5" />
+        <arg name="y" value="4.5" />
+        <arg name="z" value="0.0" />
+        <arg name="roll" value="0"/>
+        <arg name="pitch" value="0"/>
+        <arg name="yaw" value="0.0" />
+        <arg name="sdf_robot_file" value="$(find mir_gazebo)/models/pallet/model.sdf" />
   </include>
   
 </launch>
