@@ -166,7 +166,7 @@
       </collision>
     </link>
     <gazebo reference="${prefix}base_link">
-      <material>Gazebo/LightGrey</material>
+      <material>Gazebo/White</material>
     </gazebo>
 
     <!-- IMU -->
@@ -269,7 +269,7 @@
       </inertial>    
     </link>
     <gazebo reference="${prefix}arm_base_link">
-      <material>Gazebo/LightGrey</material>
+      <material>Gazebo/White</material>
       <selfCollide>true</selfCollide>
     </gazebo>
 
@@ -299,7 +299,7 @@
       </inertial>        
     </link>
     <gazebo reference="${prefix}arm_1_link">
-      <material>Gazebo/LightGrey</material>
+      <material>Gazebo/White</material>
       <selfCollide>true</selfCollide>
     </gazebo>
 
