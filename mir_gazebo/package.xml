@@ -29,8 +29,8 @@
   <exec_depend>rqt_robot_steering</exec_depend>
   <exec_depend>topic_tools</exec_depend>
 
-  <export>
-    <gazebo_ros gazebo_model_path="${prefix}/models"/>
-    <!--gazebo_ros plugin_path="${prefix}/lib" gazebo_media_path="${prefix}" /-->
-  </export>
+  <!--export>
+    <gazebo_ros gazebo_model_path="~/catkin_ws_hartmann/src/MiR200_Sim/mir_gazebo/worlds/hospital/models"/>
+  </export-->
+
 </package>
