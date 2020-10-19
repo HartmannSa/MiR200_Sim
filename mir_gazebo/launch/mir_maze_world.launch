@@ -7,6 +7,6 @@
   </include>
 
 <!--Spwan Objects for Object Detection-->
-  <include file="$(find mir_gazebo)/launch/includes/spawn_objects.launch"/>
+  <!--include file="$(find mir_gazebo)/launch/includes/spawn_objects.launch"/-->
    
 </launch>

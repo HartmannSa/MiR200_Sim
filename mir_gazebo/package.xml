@@ -30,7 +30,11 @@
   <exec_depend>topic_tools</exec_depend>
 
   <!--export>
-    <gazebo_ros gazebo_model_path="~/catkin_ws_hartmann/src/MiR200_Sim/mir_gazebo/worlds/hospital/models"/>
+    <gazebo_ros gazebo_model_path="~/catkin_ws_hartmann/src/MiR200_Sim/mir_gazebo/worlds/hospital/model"/>
   </export-->
+  <!--export>
+    <gazebo_ros gazebo_model_path="~/catkin_ws_hartmann/src/MiR200_Sim/mir_gazebo/models"/>
+    <gazebo_ros gazebo_media_path="~/catkin_ws_hartmann/src/MiR200_Sim/mir_gazebo/models"/>
+</export-->
 
 </package>
