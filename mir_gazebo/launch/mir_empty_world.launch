@@ -4,8 +4,8 @@
   <!-- Note: the world_name is with respect to GAZEBO_RESOURCE_PATH environmental variable, but can also be an absolute path -->
   <!-- arg name="world_name" default="worlds/empty.world"/--> 
   <!-- arg name="world_name" default="$(find mir_gazebo)/maps/world/pp_test_5.world"/--> 
-  <arg name="world_name" default="$(find mir_gazebo)/maps/world/hospital.world"/> 
- 
+  <!-- arg name="world_name" default="$(find mir_gazebo)/maps/world/hospital.world"/--> 
+  <arg name="world_name" default="$(find mir_gazebo)/maps/world/factory.model"/>
   
   <arg name="robot_x"   default="0.0" />
   <arg name="robot_y"   default="2.0" />
