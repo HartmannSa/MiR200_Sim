@@ -56,19 +56,25 @@ class image_feature:
 
         #### direct conversion to CV2 ####
         np_arr = np.fromstring(ros_data.data, np.uint8)
-        image_np = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
-        #image_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR) # OpenCV >= 3.0:
+        #image_np = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
+        image_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR) # OpenCV >= 3.0:
+        image_g = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
         
-        #### Feature detectors using CV2 #### 
-        # "","Grid","Pyramid" + 
-        # "FAST","GFTT","HARRIS","MSER","ORB","SIFT","STAR","SURF"
-        method = "GridFAST"
-        feat_det = cv2.FeatureDetector_create(method)
-        time1 = time.time()
+        #### Feature detectors using CV2 ####
+        ### Feature Detectors - old Version for OpenCV <3 
+        # method = "GridFAST"
+        # feat_det = cv2.FeatureDetector_create(method) 
+        ### Corner Detection Harris
+        # dst = cv2.cornerHarris(image_g,2,3,0.04)
+        # image_np[dst>0.01*dst.max()]=[0,0,255]
+        # cv2.imshow('dst',image_np)
 
+        ### SIFT, SURF, STAR, ORB
+        # feat_det = cv2.ORB_create()
+        feat_det = cv2.xfeatures2d.SURF_create()    
+        time1 = time.time()
         # convert np image to grayscale
-        featPoints = feat_det.detect(
-            cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY))
+        featPoints = feat_det.detect(cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY))
         time2 = time.time()
         if VERBOSE :
             print '%s detector found: %s points in: %s sec.'%(method,
@@ -77,6 +83,7 @@ class image_feature:
         for featpoint in featPoints:
             x,y = featpoint.pt
             cv2.circle(image_np,(int(x),int(y)), 3, (0,0,255), -1)
+            #img = cv2.drawKeypoints(img, keypoints, None)
         
         cv2.imshow('cv_img', image_np)
         cv2.waitKey(2)
@@ -90,6 +97,8 @@ class image_feature:
         self.image_pub.publish(msg)
         
         #self.subscriber.unregister()
+
+        # Other Grid","Pyramid", KAZE, AKAZE, BRISK, "FAST","GFTT","MSER"
 
 def main(args):
     '''Initializes and cleanup ros node'''
