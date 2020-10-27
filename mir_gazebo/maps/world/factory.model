@@ -34,7 +34,7 @@
       <elevation>0</elevation>
       <heading_deg>0</heading_deg>
     </spherical_coordinates>
-    <model name='deletion_wall'>
+    <!--model name='deletion_wall'>
       <static>1</static>
       <link name='sensing_link'>
         <gravity>0</gravity>
@@ -130,7 +130,7 @@
         <update_rate>5</update_rate>
       </plugin>
       <pose frame=''>-0.093674 -2.00167 0 0 -0 0</pose>
-    </model>
+    </model-->
     <model name='workcell'>
       <static>1</static>
       <link name='link'>
