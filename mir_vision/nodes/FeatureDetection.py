@@ -9,7 +9,7 @@ import roslib
 import rospy
 from sensor_msgs.msg import CompressedImage
 
-VERBOSE=True
+VERBOSE=False
 
 class object_detection:
     features = {'ORB','SIFT', 'SURF', 'STAR', 'BRISK', 'AKAZE', 'KAZE'}
@@ -62,18 +62,21 @@ class object_detection:
             print(self.classNames) 
         # Generate Descriptors from Trainimages
         self.kpList_Train, self.desList_Train = self.findDes(self.images_train)
-        # print(len(self.kpList_Train[0]))
         if VERBOSE :              
             print('Number of Descriptors', len(self.desList_Train))
 
     def findClassID(self, img,thres=20):
         kp2,des2 = self.det.detectAndCompute(img,None)
-        matcher = cv2.BFMatcher()
+        matcher_bf = cv2.BFMatcher()
+        #2 index_params = dict(algorithm=6, table_number=6, key_size=12, multi_probe_level=2)
+        #2 search_params = {}
+        #2 matcher_fl = cv2.FlannBasedMatcher(index_params, search_params)
         matchList=[]
         finalVal = -1
         try:
             for des in self.desList_Train:
-                matches = matcher.knnMatch(des, des2, k=2)
+                matches = matcher_bf.knnMatch(des, des2, k=2)
+                #2 matches = matcher_fl.knnMatch(des, des2, k=2)
                 good = []
                 for m, n in matches:
                     if m.distance < 0.75 * n.distance:
@@ -89,8 +92,9 @@ class object_detection:
             if max(matchList) > thres:
                 finalVal = matchList.index(max(matchList))
                 if (VERBOSE and finalVal != -1):
-                    #Matchpoints erneut generieren
-                    matches = matcher.knnMatch(self.desList_Train[finalVal], des2, k=2)
+                    #Generate Matchpoints again
+                    matches = matcher_bf.knnMatch(self.desList_Train[finalVal], des2, k=2)
+                    #2 matches = matcher_fl.knnMatch(self.desList_Train[finalVal], des2, k=2)
                     good = []
                     for m, n in matches:
                         if m.distance < 0.75 * n.distance:
@@ -118,10 +122,14 @@ class object_detection:
         image_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR) # OpenCV >= 3.0:
         image_g = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
         
+        time1 = time.time()
         id = self.findClassID(image_g)
+        time2 = time.time()
         if id != -1:
             cv2.putText(image_np,self.classNames[id],(50,50),cv2.FONT_HERSHEY_COMPLEX,1,(0,0,255),2)
- 
+            if VERBOSE :
+                print '%s detector found class in %.3f sec.'%(self.detector,time2-time1)
+        
         cv2.imshow('img_np',image_np)
         # img3 = cv2.drawMatchesKnn(img1,kp1,img2,kp2,good,None,flags=2)
         cv2.waitKey(1)       
