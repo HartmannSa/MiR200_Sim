@@ -38,7 +38,7 @@ class image_feature:
         '''Initialize ros publisher, ros subscriber'''
         # topic where we publish
         self.image_pub = rospy.Publisher("/output/image_raw/compressed",
-            CompressedImage)
+            CompressedImage, queue_size=1000)
         # self.bridge = CvBridge()
 
         # subscribed Topic
