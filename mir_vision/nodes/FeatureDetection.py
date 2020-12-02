@@ -12,7 +12,7 @@ from sensor_msgs.msg import CompressedImage
 VERBOSE=True
 
 class object_detection:
-    features = {'AKAZE', 'KAZE', 'ORB', 'BRISK', 'SIFT', 'SURF'}
+    features = {'ORB','SIFT', 'SURF', 'STAR', 'BRISK', 'AKAZE', 'KAZE'}
 
     def __init__(self, path, detector='ORB'):
         '''Initialize ros publisher, ros subscriber'''
@@ -31,10 +31,14 @@ class object_detection:
         if (self.detector=='ORB'):        
             self.det = cv2.ORB_create(nfeatures=1000)
         elif (self.detector=='SIFT'):
-            pass
+            self.det = cv2.xfeatures2d.SIFT_create()
+        elif (self.detector=='SURF'):
+            self.det = cv2.xfeatures2d.SURF_create()
         else:
+            print('\n########################################################')
             print('Detector ' + self.detector + ' is not implemented yet')
-            pass             
+            print('########################################################\n')
+            pass          
         desList=[]
         kpList=[]
         for img in images:
@@ -135,7 +139,9 @@ class object_detection:
 def main(args):
     '''Initializes and cleanup ros node'''
     rospy.init_node('object_detection', anonymous=True)
-    od = object_detection('/home/rosmatch/catkin_ws_hartmann/src/Mir200_Sim/mir_vision/classes')
+    path_trainimg = '/home/rosmatch/catkin_ws_hartmann/src/Mir200_Sim/mir_vision/classes'
+    # detectors: 'ORB','SIFT', 'SURF', 'STAR', 'BRISK', 'AKAZE', 'KAZE'
+    od = object_detection(path_trainimg, 'ORB')
     try:
         rospy.spin()
     except KeyboardInterrupt:
