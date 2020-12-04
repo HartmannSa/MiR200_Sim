@@ -11,7 +11,7 @@ from sensor_msgs.msg import CompressedImage
 from matplotlib import pyplot as plt
 
 
-VERBOSE=True
+VERBOSE=False
 
 class object_detection:
     features = {'ORB','SIFT', 'SURF', 'STAR', 'BRISK', 'AKAZE', 'KAZE'}
@@ -108,7 +108,8 @@ class object_detection:
                     matchList.append(len(good))  
                     if len(matchList)!=0 and len(good) != 0:       # actually not possible, even when goods = [], then ist matchList=[0]'
                        if len(good) == max(matchList):
-                           self.best_matches = good                                
+                           self.best_matches = good 
+                           print("self.best_matches wurde zugewiesen")                               
         except:
             pass
         if VERBOSE:
@@ -118,10 +119,37 @@ class object_detection:
         if len(matchList)!=0:
             if max(matchList) > thres:
                 finalVal = matchList.index(max(matchList))
-                if (VERBOSE and finalVal != -1):                     
-                    ## Show the image with matches
+                ## Draw Bounding Box
+                MIN_MATCH_COUNT = 10
+                if len(self.best_matches)>MIN_MATCH_COUNT:
+                    good_matches = self.best_matches[:MIN_MATCH_COUNT]
+                    kp1 = self.kpList_Train[finalVal]
+                    img1=self.images_train[finalVal]
+                    src_pts = np.float32([ kp1[m.queryIdx].pt for m in good_matches ]).reshape(-1,1,2)
+                    dst_pts = np.float32([ kp2[m.trainIdx].pt for m in good_matches ]).reshape(-1,1,2)
+                    M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC,5.0)
+                    matchesMask = mask.ravel().tolist()
+                    h,w = img1.shape
+                    pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
+                    dst = cv2.perspectiveTransform(pts,M)
+                    dst += (w, 0)  # adding offset
+                    draw_params = dict(matchColor = (0,255,0), # draw matches in green color
+                                singlePointColor = None,
+                                matchesMask = matchesMask, # draw only inliers
+                                flags = 2)
+                    img_bb = cv2.drawMatches(img1,kp1,img,kp2,good_matches, None,**draw_params)
+                    # Draw bounding box in Red
+                    img3 = cv2.polylines(img_bb, [np.int32(dst)], True, (0,0,255),3, cv2.LINE_AA)
+                    cv2.imshow("result", img3)
+                    cv2.waitKey(1)
+                else:
+                    print("Not enough matches are found - %d/%d" %(len(self.matches),MIN_MATCH_COUNT))
+                    matchesMask = None
+                ## Show the image only with matches
+                if (VERBOSE and finalVal != -1): 
                     if match_method == 'best':
-                        img_matches = cv2.drawMatches(self.images_train[finalVal], self.kpList_Train[finalVal],img, kp2, self.best_matches[:10],None, flags=2)
+                        print('best is choosen')
+                        img_matches = cv2.drawMatches(img1, kp1 ,img, kp2, self.best_matches[:10],None, flags=2)
                     elif match_method =='ratio' or match_method =='flann':
                         img_matches = cv2.drawMatchesKnn(self.images_train[finalVal], self.kpList_Train[finalVal],img, kp2, self.best_matches[:20],None, flags=2) # draws all the k best matches (so e.g. two lines for each keypoint) (but in good only m is appended)
                     img_matches = cv2.resize(img_matches, (1000,650)) 
@@ -132,8 +160,9 @@ class object_detection:
                     cv2.destroyWindow("Matches") 
                 except:
                     pass
+                
         return finalVal
-
+        
     def callback(self, ros_data):
         '''Callback function of subscribed topic. 
         Here camera-images get converted, features detected and objects classified'''
@@ -152,7 +181,6 @@ class object_detection:
             cv2.putText(image_np,self.classNames[id],(50,50),cv2.FONT_HERSHEY_COMPLEX,1,(0,0,255),2)
             if VERBOSE :
                 print("%s detector found class in %.3f sec." %(self.detector,time2-time1))
-        
         cv2.imshow('img_np',image_np)
         cv2.waitKey(1)       
         
