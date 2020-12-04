@@ -108,14 +108,14 @@ class object_detection:
                     matchList.append(len(good))  
                     if len(matchList)!=0 and len(good) != 0:       # actually not possible, even when goods = [], then ist matchList=[0]'
                        if len(good) == max(matchList):
-                           self.best_matches = good 
-                           print("self.best_matches wurde zugewiesen")                               
+                           self.best_matches = good                                
         except:
             pass
         if VERBOSE:
             print("Good Matches per Class")
             print(matchList)
-        ## Give back Id (finalVal) of matching class and show matches in image    
+        ## Give back Id (finalVal) of matching class and show matches in image  
+        dst=[]  
         if len(matchList)!=0:
             if max(matchList) > thres:
                 finalVal = matchList.index(max(matchList))
@@ -142,6 +142,7 @@ class object_detection:
                     img3 = cv2.polylines(img_bb, [np.int32(dst)], True, (0,0,255),3, cv2.LINE_AA)
                     cv2.imshow("result", img3)
                     cv2.waitKey(1)
+                    dst -= (w, 0)  # adding offset
                 else:
                     print("Not enough matches are found - %d/%d" %(len(self.matches),MIN_MATCH_COUNT))
                     matchesMask = None
@@ -161,7 +162,7 @@ class object_detection:
                 except:
                     pass
                 
-        return finalVal
+        return finalVal, dst
         
     def callback(self, ros_data):
         '''Callback function of subscribed topic. 
@@ -175,10 +176,11 @@ class object_detection:
         image_g = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
         
         time1 = time.time()
-        id = self.findClassID(image_g, match_method='best')
+        id, dst = self.findClassID(image_g, match_method='best')
         time2 = time.time()
         if id != -1:
             cv2.putText(image_np,self.classNames[id],(50,50),cv2.FONT_HERSHEY_COMPLEX,1,(0,0,255),2)
+            img_np = cv2.polylines(image_np, [np.int32(dst)], True, (0,0,255),3, cv2.LINE_AA)
             if VERBOSE :
                 print("%s detector found class in %.3f sec." %(self.detector,time2-time1))
         cv2.imshow('img_np',image_np)
