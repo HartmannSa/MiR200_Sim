@@ -8,9 +8,10 @@ from scipy.ndimage import filters
 import roslib
 import rospy
 from sensor_msgs.msg import CompressedImage
+from matplotlib import pyplot as plt
 
 
-VERBOSE=False
+VERBOSE=True
 
 class object_detection:
     features = {'ORB','SIFT', 'SURF', 'STAR', 'BRISK', 'AKAZE', 'KAZE'}
@@ -19,7 +20,7 @@ class object_detection:
         '''Initialize ros publisher, ros subscriber'''
         self.image_pub = rospy.Publisher("/output/image_raw/compressed",
             CompressedImage, queue_size=500)
-            
+        self.matches = []    
         self.path = path            # Path to class_images/ Trainimages
         self.detector = detector    # Which Feature Detector is used
         self.CreateMatches()        # Detect Features in Trainimages
@@ -71,42 +72,58 @@ class object_detection:
         if VERBOSE :              
             print("Number of Descriptors", len(self.desList_Train))
 
-    def findClassID(self, img,thres=20):
+    def findClassID(self, img,thres=20, match_method='best'):
         kp2,des2 = self.det.detectAndCompute(img,None)
-        matcher_bf = cv2.BFMatcher()
-        #2 index_params = dict(algorithm=6, table_number=6, key_size=12, multi_probe_level=2)
-        #2 search_params = {}
-        #2 matcher_fl = cv2.FlannBasedMatcher(index_params, search_params)
+        ## FLANN Matching
+        if match_method == 'flann':            
+            index_params = dict(algorithm=6, table_number=6, key_size=12, multi_probe_level=2)
+            search_params = {}
+            matcher_fl = cv2.FlannBasedMatcher(index_params, search_params)
+        ## Brute-Force Matching
+        elif match_method == 'best':
+            matcher_bf1 = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True) # NORM_HAMMING for ORB
+        elif match_method =='ratio':
+            matcher_bf2 = cv2.BFMatcher()
         matchList=[]
         finalVal = -1
         try:
             for des in self.desList_Train:
-                matches = matcher_bf.knnMatch(des, des2, k=2)
-                #2 matches = matcher_fl.knnMatch(des, des2, k=2)
-                good = []
-                for m, n in matches:
-                    if m.distance < 0.75 * n.distance:
-                        good.append([m])
-                matchList.append(len(good))
+                if des.shape == des2.shape:
+                    good = []
+                    ## Crosscheck and best matches
+                    if match_method == 'best':
+                        matches = matcher_bf1.match(des,des2)   # return only best match
+                        good = sorted(matches, key = lambda x:x.distance)
+                    else:
+                        if match_method =='ratio':
+                            matches = matcher_bf2.knnMatch(des, des2, k=2)   # return k best matches
+                        elif match_method == 'flann':
+                            matches = matcher_fl.knnMatch(des, des2, k=2)
+                        ## Ratio Test Method
+                        for m, n in matches:
+                            if m.distance < 0.75 * n.distance:
+                                good.append([m])
+
+                    ## save number of and best matches (equal to most good matches)
+                    matchList.append(len(good))  
+                    if len(matchList)!=0 and len(good) != 0:       # actually not possible, even when goods = [], then ist matchList=[0]'
+                       if len(good) == max(matchList):
+                           self.best_matches = good                                
         except:
             pass
         if VERBOSE:
             print("Good Matches per Class")
             print(matchList)
-        # Give back Id (finalVal) of matching class and show matches in image    
+        ## Give back Id (finalVal) of matching class and show matches in image    
         if len(matchList)!=0:
             if max(matchList) > thres:
                 finalVal = matchList.index(max(matchList))
-                if (VERBOSE and finalVal != -1):
-                    #Generate Matchpoints again
-                    matches = matcher_bf.knnMatch(self.desList_Train[finalVal], des2, k=2)
-                    #2 matches = matcher_fl.knnMatch(self.desList_Train[finalVal], des2, k=2)
-                    good = []
-                    for m, n in matches:
-                        if m.distance < 0.75 * n.distance:
-                            good.append([m])
-                    # Show the image with matches
-                    img_matches = cv2.drawMatchesKnn(self.images_train[finalVal], self.kpList_Train[finalVal],img, kp2, matches[:20],None, flags=2)
+                if (VERBOSE and finalVal != -1):                     
+                    ## Show the image with matches
+                    if match_method == 'best':
+                        img_matches = cv2.drawMatches(self.images_train[finalVal], self.kpList_Train[finalVal],img, kp2, self.best_matches[:10],None, flags=2)
+                    elif match_method =='ratio' or match_method =='flann':
+                        img_matches = cv2.drawMatchesKnn(self.images_train[finalVal], self.kpList_Train[finalVal],img, kp2, self.best_matches[:20],None, flags=2) # draws all the k best matches (so e.g. two lines for each keypoint) (but in good only m is appended)
                     img_matches = cv2.resize(img_matches, (1000,650)) 
                     cv2.imshow("Matches", img_matches) 
                     cv2.waitKey(1)                    
@@ -129,7 +146,7 @@ class object_detection:
         image_g = cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY)
         
         time1 = time.time()
-        id = self.findClassID(image_g)
+        id = self.findClassID(image_g, match_method='best')
         time2 = time.time()
         if id != -1:
             cv2.putText(image_np,self.classNames[id],(50,50),cv2.FONT_HERSHEY_COMPLEX,1,(0,0,255),2)
@@ -137,7 +154,6 @@ class object_detection:
                 print("%s detector found class in %.3f sec." %(self.detector,time2-time1))
         
         cv2.imshow('img_np',image_np)
-        # img3 = cv2.drawMatchesKnn(img1,kp1,img2,kp2,good,None,flags=2)
         cv2.waitKey(1)       
         
         #### Create and Publish CompressedIamge ####
@@ -145,10 +161,7 @@ class object_detection:
         msg.header.stamp = rospy.Time.now()
         msg.format = "jpeg"
         msg.data = np.array(cv2.imencode('.jpg', image_np)[1]).tostring()
-        # Publish new image
-        self.image_pub.publish(msg)        
-
-
+        self.image_pub.publish(msg)     
 
 def main(args):
     '''Initializes and cleanup ros node'''
