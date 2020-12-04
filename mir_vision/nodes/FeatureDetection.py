@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from __future__ import print_function
 import numpy as np
 import cv2
 import os
@@ -8,6 +8,7 @@ from scipy.ndimage import filters
 import roslib
 import rospy
 from sensor_msgs.msg import CompressedImage
+
 
 VERBOSE=False
 
@@ -22,10 +23,15 @@ class object_detection:
         self.path = path            # Path to class_images/ Trainimages
         self.detector = detector    # Which Feature Detector is used
         self.CreateMatches()        # Detect Features in Trainimages
-        self.subscriber = rospy.Subscriber("/camera/color/image_raw/compressed",
-            CompressedImage, self.callback,  queue_size = 1)
+        self.subscriber = rospy.Subscriber("/camera/color/image_raw/compressed", CompressedImage, self.callback,  queue_size = 1)
         if VERBOSE :
-            print "subscribed to /camera/color/image_raw/compressed"
+            print("subscribed to /camera/color/image_raw/compressed")
+    
+    def __del__(self): 
+        if VERBOSE:
+            self.subscriber.unregister()
+            self.image_pub.unregister()
+            print("Destructor called") 
 
     def findDes(self, images):
         if (self.detector=='ORB'):        
@@ -35,9 +41,9 @@ class object_detection:
         elif (self.detector=='SURF'):
             self.det = cv2.xfeatures2d.SURF_create()
         else:
-            print('\n########################################################')
-            print('Detector ' + self.detector + ' is not implemented yet')
-            print('########################################################\n')
+            print("\n########################################################")
+            print("Detector ' + self.detector + ' is not implemented yet")
+            print("########################################################\n")
             pass          
         desList=[]
         kpList=[]
@@ -58,12 +64,12 @@ class object_detection:
             self.images_train.append(imgCur)
             self.classNames.append(os.path.splitext(cl)[0])
         if VERBOSE :
-            print('Total Classes', len(myList))
+            print("Total Classes", len(myList))
             print(self.classNames) 
         # Generate Descriptors from Trainimages
         self.kpList_Train, self.desList_Train = self.findDes(self.images_train)
         if VERBOSE :              
-            print('Number of Descriptors', len(self.desList_Train))
+            print("Number of Descriptors", len(self.desList_Train))
 
     def findClassID(self, img,thres=20):
         kp2,des2 = self.det.detectAndCompute(img,None)
@@ -85,7 +91,7 @@ class object_detection:
         except:
             pass
         if VERBOSE:
-            print('Good Matches per Class')
+            print("Good Matches per Class")
             print(matchList)
         # Give back Id (finalVal) of matching class and show matches in image    
         if len(matchList)!=0:
@@ -115,7 +121,7 @@ class object_detection:
         '''Callback function of subscribed topic. 
         Here camera-images get converted, features detected and objects classified'''
         if VERBOSE :
-            print 'received image of type: "%s"' % ros_data.format
+            print("received image of type: %s" %(ros_data.format))
 
         #### direct conversion to CV2 ####
         np_arr = np.fromstring(ros_data.data, np.uint8)
@@ -128,7 +134,7 @@ class object_detection:
         if id != -1:
             cv2.putText(image_np,self.classNames[id],(50,50),cv2.FONT_HERSHEY_COMPLEX,1,(0,0,255),2)
             if VERBOSE :
-                print '%s detector found class in %.3f sec.'%(self.detector,time2-time1)
+                print("%s detector found class in %.3f sec." %(self.detector,time2-time1))
         
         cv2.imshow('img_np',image_np)
         # img3 = cv2.drawMatchesKnn(img1,kp1,img2,kp2,good,None,flags=2)
@@ -141,7 +147,7 @@ class object_detection:
         msg.data = np.array(cv2.imencode('.jpg', image_np)[1]).tostring()
         # Publish new image
         self.image_pub.publish(msg)        
-        #self.subscriber.unregister()
+
 
 
 def main(args):
@@ -153,7 +159,7 @@ def main(args):
     try:
         rospy.spin()
     except KeyboardInterrupt:
-        print "Shutting down ROS Image feature detector module"
+        print("Shutting down ROS Image feature detector module")
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':
